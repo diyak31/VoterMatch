@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Political Match</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; }
+    .selected { background-color: #2563eb !important; color: white !important; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-blue-600 text-white text-lg font-semibold px-6 py-3 shadow-md flex justify-between items-center">
+  <span>Political Match</span>
+  <button class="bg-white text-blue-600 px-4 py-1 rounded-md text-sm font-medium">Start Over</button>
+</header>
+
+<!-- AUTH SCREEN -->
+<main class="flex-grow flex items-center justify-center px-4" id="screen-auth">
+  <div class="bg-white rounded-xl shadow-md w-full max-w-md p-6 space-y-6">
+    <div class="flex border-b border-gray-200">
+      <button id="login-tab" class="flex-1 py-2 text-center font-medium tab-active" onclick="switchTab('login')">Log In</button>
+      <button id="signup-tab" class="flex-1 py-2 text-center font-medium text-gray-600" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+    <div id="login-form">
+      <input type="email" placeholder="your@email.com" class="w-full mt-2 border rounded px-3 py-2"/>
+      <input type="password" placeholder="Password" class="w-full mt-2 border rounded px-3 py-2"/>
+      <div class="flex justify-between items-center mt-2">
+        <label class="text-sm"><input type="checkbox"/> Remember me</label>
+        <a href="#" class="text-sm text-blue-600">Forgot password?</a>
+      </div>
+      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="goToZip()">Log In</button>
+      <button class="w-full text-blue-600 text-sm mt-2" onclick="goToZip()">Continue as Guest</button>
+    </div>
+    <div id="signup-form" class="hidden">
+      <input type="text" placeholder="Name" class="w-full mt-2 border rounded px-3 py-2"/>
+      <input type="email" placeholder="Email" class="w-full mt-2 border rounded px-3 py-2"/>
+      <input type="password" placeholder="Password" class="w-full mt-2 border rounded px-3 py-2"/>
+      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="goToZip()">Sign Up</button>
+    </div>
+  </div>
+</main>
+
+<!-- ZIP SCREEN -->
+<section id="screen-zip" class="hidden flex-grow flex items-center justify-center px-4">
+  <div class="bg-white rounded-xl shadow-md w-full max-w-md p-6 text-center space-y-4">
+    <h2 class="text-2xl font-bold text-blue-900">Find Your Political Match</h2>
+    <p class="text-sm text-gray-600">Select issues that matter to you, answer a few questions, and we'll match you with candidates who share your values.</p>
+    <input type="text" placeholder="e.g. 10001" class="w-full border rounded px-3 py-2"/>
+    <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="goToIssues()">Get Started</button>
+  </div>
+</section>
+
+<!-- ISSUE SELECTION SCREEN (Updated) -->
+<section id="screen-issues" class="hidden flex-grow px-4 py-8">
+  <div class="max-w-lg mx-auto">
+    <h2 class="text-xl font-bold mb-2 text-blue-900">Select 5 Issues That Matter Most To You</h2>
+    <p class="text-sm text-gray-600 mb-4">Tap to select issues. You must choose exactly 5.</p>
+    <div class="space-y-2" id="issue-list">
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Inflation/cost of living <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Jobs/economy growth <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Healthcare <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Immigration <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Govt spending <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Civil rights/equality <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Climate <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Abortion <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">National security/foreign policy <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Education <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Crime <span>○</span></button>
+      <button class="w-full border rounded px-4 py-2 flex justify-between items-center" onclick="selectIssue(this)">Guns <span>○</span></button>
+    </div>
+    <div class="flex justify-between items-center mt-4">
+      <span id="issue-count" class="text-sm text-gray-700">0/5 selected</span>
+      <button id="continue-btn" class="bg-blue-600 text-white py-2 px-6 rounded disabled:opacity-50" disabled>Continue</button>
+    </div>
+  </div>
+</section>
+
+<!-- Remaining sections unchanged... -->
+
+<!-- Footer -->
+<footer class="text-center text-sm text-gray-500 py-4">
+  © 2023 Political Match Finder. Demo tool only.
+</footer>
+
+<script>
+  function switchTab(tab) {
+    document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+    document.getElementById('login-tab').classList.toggle('tab-active', tab === 'login');
+    document.getElementById('signup-tab').classList.toggle('tab-active', tab === 'signup');
+  }
+
+  function toggleIssue(btn) {
+    btn.classList.toggle('selected');
+  }
+
+  function goToZip() {
+    document.getElementById('screen-auth').classList.add('hidden');
+    document.getElementById('screen-zip').classList.remove('hidden');
+  }
+
+  function goToIssues() {
+    document.getElementById('screen-zip').classList.add('hidden');
+    document.getElementById('screen-issues').classList.remove('hidden');
+  }
+
+  function selectIssue(btn) {
+    const selected = btn.classList.contains('bg-blue-100');
+    const selectedButtons = document.querySelectorAll('#issue-list .bg-blue-100');
+    if (!selected && selectedButtons.length >= 5) return;
+
+    btn.classList.toggle('bg-blue-100');
+    btn.classList.toggle('border-blue-600');
+
+    const span = btn.querySelector('span');
+    span.textContent = btn.classList.contains('bg-blue-100') ? '●' : '○';
+
+    const count = document.querySelectorAll('#issue-list .bg-blue-100').length;
+    document.getElementById('issue-count').textContent = `${count}/5 selected`;
+    document.getElementById('continue-btn').disabled = count !== 5;
+  }
+</script>
+
+</body>
+</html>
