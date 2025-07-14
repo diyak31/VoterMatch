@@ -32,14 +32,14 @@
         <label class="text-sm"><input type="checkbox"/> Remember me</label>
         <a href="#" class="text-sm text-blue-600">Forgot password?</a>
       </div>
-      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="goToZip()">Log In</button>
+      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="loginUser()">Log In</button>
       <button class="w-full text-blue-600 text-sm mt-2" onclick="goToZip()">Continue as Guest</button>
     </div>
     <div id="signup-form" class="hidden">
       <input type="text" placeholder="Name" class="w-full mt-2 border rounded px-3 py-2"/>
       <input type="email" placeholder="Email" class="w-full mt-2 border rounded px-3 py-2"/>
       <input type="password" placeholder="Password" class="w-full mt-2 border rounded px-3 py-2"/>
-      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="goToZip()">Sign Up</button>
+      <button class="w-full mt-4 bg-blue-600 text-white py-2 rounded" onclick="signupUser()">Sign Up</button>
     </div>
   </div>
 </main>
@@ -95,10 +95,6 @@
     document.getElementById('signup-tab').classList.toggle('tab-active', tab === 'signup');
   }
 
-  function toggleIssue(btn) {
-    btn.classList.toggle('selected');
-  }
-
   function goToZip() {
     document.getElementById('screen-auth').classList.add('hidden');
     document.getElementById('screen-zip').classList.remove('hidden');
@@ -123,6 +119,46 @@
     const count = document.querySelectorAll('#issue-list .bg-blue-100').length;
     document.getElementById('issue-count').textContent = `${count}/5 selected`;
     document.getElementById('continue-btn').disabled = count !== 5;
+  }
+
+  async function loginUser() {
+    const email = document.querySelector('#login-form input[type=email]').value;
+    const password = document.querySelector('#login-form input[type=password]').value;
+
+    const res = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      localStorage.setItem('token', data.token);
+      goToZip();
+    } else {
+      const err = await res.json();
+      alert('Login failed: ' + err.message);
+    }
+  }
+
+  async function signupUser() {
+    const name = document.querySelector('#signup-form input[type=text]').value;
+    const email = document.querySelector('#signup-form input[type=email]').value;
+    const password = document.querySelector('#signup-form input[type=password]').value;
+
+    const res = await fetch('http://localhost:3000/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    if (res.ok) {
+      alert('Signup successful! Logging you in...');
+      await loginUser(); // Auto-login after signup
+    } else {
+      const err = await res.json();
+      alert('Signup failed: ' + err.message);
+    }
   }
 </script>
 
